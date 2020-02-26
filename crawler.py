@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 
 CHINESE_ONLY = True
-START_YEAR = 2010
+START_YEAR = 2008
 END_YEAR = 2020
 
 def get_album_info(url):
@@ -21,7 +21,6 @@ def crawl_lyrics(url) :
 	response = requests.get(url)
 	soup = BeautifulSoup(response.text, "lxml")
 	content = soup.find(id = "fsZx3")
-	print(url)
 	if not content:
 		print("JIZZ NOT FOUND..... URL: " + url)
 		return []
@@ -29,39 +28,25 @@ def crawl_lyrics(url) :
 	for i in content("ol") : #example:https://mojim.com/twy104616x4x3.htm
 		i.extract()
 
-	check = False
 	lyrics = list()
 	for line in content.stripped_strings :
 		if "更多更詳盡歌詞 在" in line or "※ Mojim.com　魔鏡歌詞網" in line :
 			continue
-		if "作詞：" in line or "作曲：" in line or "編曲：" in line or "演唱：" in line : #example:https://mojim.com/twy108440x39x1.htm
-			check = True 
+		if "：" in line : #example:https://mojim.com/twy108440x39x1.htm
 			continue
 		if line.find('[') != -1 or line.find(']') != -1 : #example:https://mojim.com/twy104824x14x1.htm
 			continue
 		if "--" in line : #example:https://mojim.com/twy102447x19x1.htm
 			break;
-		if check : #example:https://mojim.com/twy109372x34x1.htm
-			lyrics.append(line)
+		lyrics.append(line)
 
-	if not check : #example: http://mojim.com/twy106002x6x1.htm
-		print("Not check! url: " + url)
-		for line in content.stripped_strings :
-			if "更多更詳盡歌詞 在" in line or "※ Mojim.com　魔鏡歌詞網" in line :
-				continue
-			if line.find('[') != -1 or line.find(']') != -1 :
-				continue
-			if "--" in line :
-				break;
-			lyrics.append(line)
-		
 	return lyrics
 
 def crawl_songs():
 	Mojim_URL = "http://mojim.com"
 	URL = "http://mojim.com/twzlist"
-	for year in range(2019, 2020) :
-		for month in range(1, 3) :
+	for year in range(START_YEAR, END_YEAR) :
+		for month in range(5, 13) :
 			songs_list = list()
 			YEAR = str(year)
 			if month < 10 :
@@ -69,10 +54,16 @@ def crawl_songs():
 			else :
 				MONTH = str(month)
 			print("Begin crawling songs in " + YEAR + '-' + MONTH + ".")
+
 			response = requests.get(URL + YEAR + '-' + MONTH + ".htm")
 			soup = BeautifulSoup(response.text, "lxml")
+
+			title = soup.find("title")
+			if not (YEAR in title.text) or not (MONTH in title.text) :
+				print("Unable to crawl songs in " + YEAR + '-' + MONTH + ".")
+				continue
+
 			album_list = soup.find_all("dd")
-			t = 0
 			for album in album_list :
 				general_info = dict()
 				album_name = album.find("h1")
