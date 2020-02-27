@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 
 CHINESE_ONLY = True
-START_YEAR = 2008
+START_YEAR = 2000
 END_YEAR = 2020
 
 def get_album_info(url):
@@ -45,8 +45,8 @@ def crawl_lyrics(url) :
 def crawl_songs():
 	Mojim_URL = "http://mojim.com"
 	URL = "http://mojim.com/twzlist"
-	for year in range(START_YEAR, END_YEAR) :
-		for month in range(5, 13) :
+	for year in range(START_YEAR, END_YEAR + 1) :
+		for month in range(1, 13) :
 			songs_list = list()
 			YEAR = str(year)
 			if month < 10 :
