@@ -7,6 +7,9 @@ CHINESE_ONLY = True
 ```
 只會爬魔鏡歌詞網專輯介紹中為國語專輯的歌曲，改成 False 的話就所有歌曲都爬。
 
+## getyoutubeid.py
+從歌詞.json檔案中用歌名+歌手去youtube搜尋，取得第一個搜尋結果的影片id。
+若搜尋查無結果，就會回傳一個酷酷的影片id。
 
 
 
